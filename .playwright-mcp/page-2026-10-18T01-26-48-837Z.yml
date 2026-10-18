@@ -1,0 +1,133 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary "주 메뉴" [ref=e3]:
+      - link "배움 기록 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#top"
+        - img [ref=e6]
+        - generic [ref=e10]:
+          - strong [ref=e11]: 배움 기록
+          - generic [ref=e12]: 우리 반 수행평가
+      - generic [ref=e13]:
+        - generic [ref=e14]: "6"
+        - generic [ref=e15]:
+          - strong [ref=e16]: 햇살초등학교
+          - generic [ref=e17]: 6학년 2반
+        - img [ref=e18]
+      - paragraph [ref=e20]: 공간
+      - navigation [ref=e21]:
+        - button "평가 관리 3" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+          - generic [ref=e26]: 평가 관리
+          - generic [ref=e27]: "3"
+        - button "학생 결과 보기" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+          - generic [ref=e32]: 학생 결과 보기
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: 김
+          - generic [ref=e36]:
+            - strong [ref=e37]: 김선생님
+            - generic [ref=e38]: 교사 데모 화면
+          - button "계정 메뉴" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+        - paragraph [ref=e44]:
+          - text: 실제 학교 계정이 연결되지 않은
+          - text: 시연용 화면입니다.
+    - main [ref=e45]:
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - generic [ref=e48]: 우리 반
+          - generic [ref=e49]: /
+          - strong [ref=e50]: 평가 관리
+        - generic [ref=e51]:
+          - generic [ref=e52]: 시연용 데이터
+          - button "도움말" [ref=e54] [cursor=pointer]:
+            - img [ref=e55]
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - paragraph [ref=e61]: 2025학년도 · 2학기
+            - heading "우리 반 배움 기록" [level=1] [ref=e62]
+            - paragraph [ref=e63]: 아이들의 노력과 성장을 차곡차곡 기록해 보세요.
+          - button "새 평가 만들기" [ref=e64] [cursor=pointer]:
+            - img [ref=e65]
+            - text: 새 평가 만들기
+        - generic [ref=e67]:
+          - img [ref=e69]
+          - generic [ref=e72]:
+            - strong [ref=e73]: 안전한 시연을 위해 예시 정보만 사용해 주세요
+            - paragraph [ref=e74]: 이 화면은 데모이며 학교 계정·보안 저장소와 연결되지 않았습니다. 실제 학생의 이름이나 평가 결과는 입력하지 마세요.
+          - button "안내 닫기" [ref=e75] [cursor=pointer]: ×
+        - generic "평가 요약" [ref=e76]:
+          - article [ref=e77]:
+            - generic [ref=e78]:
+              - generic [ref=e79]: 등록된 평가
+              - img [ref=e81]
+            - strong [ref=e84]: "3"
+            - generic [ref=e85]: 이번 학기
+          - article [ref=e86]:
+            - generic [ref=e87]:
+              - generic [ref=e88]: 우리 반 학생
+              - img [ref=e90]
+            - strong [ref=e93]: "3"
+            - generic [ref=e94]: 시연용 학생
+          - article [ref=e95]:
+            - generic [ref=e96]:
+              - generic [ref=e97]: 피드백 확인
+              - img [ref=e99]
+            - strong [ref=e102]:
+              - text: "2"
+              - emphasis [ref=e103]: / 3
+            - generic [ref=e104]: 선생님 검토 완료
+        - region "평가 목록" [ref=e105]:
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - paragraph [ref=e108]: CLASSROOM
+              - heading "평가 목록" [level=2] [ref=e109]
+            - generic [ref=e110]:
+              - img [ref=e111]
+              - searchbox "평가 검색" [ref=e114]
+          - generic [ref=e115]:
+            - article [ref=e116]:
+              - button "수 분수의 나눗셈 수학 10월 15일 입력 현황 3/3 피드백 확인 완료" [ref=e117] [cursor=pointer]:
+                - generic [ref=e118]: 수
+                - generic [ref=e119]:
+                  - strong [ref=e120]: 분수의 나눗셈
+                  - generic [ref=e121]:
+                    - generic [ref=e122]: 수학
+                    - generic [ref=e124]: 10월 15일
+                - generic [ref=e126]:
+                  - generic [ref=e127]: 입력 현황
+                  - strong [ref=e128]: 3/3
+                - generic [ref=e129]: 피드백 확인 완료
+                - img [ref=e130]
+            - article [ref=e132]:
+              - button "국 주장과 근거를 담은 글쓰기 국어 10월 8일 입력 현황 3/3 피드백 확인 완료" [ref=e133] [cursor=pointer]:
+                - generic [ref=e134]: 국
+                - generic [ref=e135]:
+                  - strong [ref=e136]: 주장과 근거를 담은 글쓰기
+                  - generic [ref=e137]:
+                    - generic [ref=e138]: 국어
+                    - generic [ref=e140]: 10월 8일
+                - generic [ref=e142]:
+                  - generic [ref=e143]: 입력 현황
+                  - strong [ref=e144]: 3/3
+                - generic [ref=e145]: 피드백 확인 완료
+                - img [ref=e146]
+            - article [ref=e148]:
+              - button "과 전기 회로 꾸미기 과학 9월 29일 입력 현황 3/3 검토가 필요해요" [ref=e149] [cursor=pointer]:
+                - generic [ref=e150]: 과
+                - generic [ref=e151]:
+                  - strong [ref=e152]: 전기 회로 꾸미기
+                  - generic [ref=e153]:
+                    - generic [ref=e154]: 과학
+                    - generic [ref=e156]: 9월 29일
+                - generic [ref=e158]:
+                  - generic [ref=e159]: 입력 현황
+                  - strong [ref=e160]: 3/3
+                - generic [ref=e161]: 검토가 필요해요
+                - img [ref=e162]
+        - generic [ref=e164]:
+          - generic [ref=e165]: 오늘도 아이들의 작은 성장을 응원합니다.
+          - generic [ref=e166]: 배움 기록 · 교사용 데모
+  - status

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <base target="_top" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>6학년 6반 평가 결과 조회</title>
+    <?!= include('Styles'); ?>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-icon">6</span><span><strong>평가 결과 조회</strong><small>6학년 6반</small></span></a>
+      <div class="topbar-right"><span class="secure-label">학교 계정 기반</span><span id="signed-in-label" class="signed-in-label"></span></div>
+    </header>
+
+    <main class="page-wrap">
+      <section id="loading-view" class="center-card"><span class="loader"></span><p>화면을 준비하고 있습니다.</p></section>
+
+      <section id="student-login-view" class="login-layout hidden">
+        <div class="login-copy"><p class="eyebrow">6TH GRADE · CLASS 6</p><h1>평가 결과 조회</h1><p>출석번호와 개인 PIN을 입력해 본인의 결과를 확인하세요.</p></div>
+        <form id="student-login-form" class="panel login-panel">
+          <label for="login-number">출석번호</label><input id="login-number" inputmode="numeric" autocomplete="off" required placeholder="예: 12" />
+          <label for="login-pin">개인 PIN</label><input id="login-pin" type="password" inputmode="numeric" autocomplete="off" required placeholder="4자리 숫자" />
+          <p class="form-error hidden" id="login-error"></p>
+          <button class="button primary full" type="submit">내 결과 확인</button>
+        </form>
+      </section>
+
+      <section id="teacher-view" class="hidden">
+        <div class="page-heading"><div><p class="eyebrow">TEACHER WORKSPACE</p><h1>평가 관리</h1><p>과목을 선택해 평가, 학생, 피드백을 관리합니다.</p></div><button class="button primary" id="new-assessment-button" type="button">+ 새 평가</button></div>
+        <nav class="teacher-tabs" aria-label="교사 메뉴">
+          <button class="tab active" data-page="assessments">평가 관리</button>
+          <button class="tab" data-page="students">학생 관리 <span id="student-total-badge">0</span></button>
+          <button class="tab" data-page="reviews">피드백 검토 <span id="review-total-badge">0</span></button>
+        </nav>
+
+        <section id="teacher-assessments-page" class="teacher-page">
+          <div class="page-section-heading"><div><h2 id="teacher-section-title">과목 선택</h2><p id="teacher-section-copy">과목을 선택하면 관련 수행평가가 표시됩니다.</p></div></div>
+          <div id="teacher-subject-grid" class="subject-grid"></div>
+          <div id="teacher-assessment-list-view" class="hidden">
+            <div class="subpage-heading"><button class="button quiet" id="teacher-back-subjects" type="button">← 과목 목록</button><h2 id="teacher-assessment-heading"></h2></div>
+            <div id="teacher-assessment-list" class="stack"></div>
+          </div>
+        </section>
+
+        <section id="teacher-students-page" class="teacher-page hidden">
+          <div class="page-section-heading"><div><h2>학생 관리</h2><p>출석번호와 이름을 등록하고 수정합니다.</p></div><button class="button primary" id="add-student-button" type="button">+ 학생 등록</button></div>
+          <div class="demo-warning">시연용 개인정보만 사용하세요. 실제 학생 자료를 입력하기 전 학교의 저장·접근 권한 승인을 확인해 주세요.</div>
+          <label class="search"><input id="student-search" type="search" placeholder="출석번호 또는 이름 검색" /></label>
+          <div id="teacher-student-list" class="stack"></div>
+        </section>
+
+        <section id="teacher-reviews-page" class="teacher-page hidden">
+          <div class="page-section-heading"><div><h2 id="review-page-heading">피드백 검토 · 과목 선택</h2><p>과목을 선택해 전체 학생의 문장을 확인하고 한 번에 공개합니다.</p></div></div>
+          <div id="review-subject-grid" class="subject-grid"></div>
+          <div id="review-assessment-list-view" class="hidden">
+            <div class="subpage-heading"><button class="button quiet" id="review-back-subjects" type="button">← 과목 목록</button><h2 id="review-assessment-heading"></h2></div>
+            <div id="review-assessment-list" class="stack"></div>
+          </div>
+          <div id="review-editor-view" class="hidden">
+            <div class="subpage-heading"><button class="button quiet" id="review-back-assessments" type="button">← 평가 목록</button><h2 id="review-editor-heading"></h2></div>
+            <p class="review-help">아래 문장을 모두 확인하고 필요한 부분을 수정한 뒤 한 번에 공개하세요. 문장 제안은 AI가 아닌 규칙 기반이며 외부로 전송되지 않습니다.</p>
+            <div id="review-editor-list" class="stack"></div>
+            <button class="button primary full" id="publish-all-feedback" type="button">수정사항 저장 및 전체 공개</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="student-view" class="hidden">
+        <div class="page-heading"><div><p class="eyebrow">MY ASSESSMENTS</p><h1><span id="student-name-heading"></span> 학생의 평가 결과</h1><p id="student-result-count"></p></div><button class="button quiet" id="student-logout" type="button">로그아웃</button></div>
+        <div id="student-subject-grid" class="subject-grid"></div>
+        <div id="student-results-view" class="hidden">
+          <div class="subpage-heading"><button class="button quiet" id="student-back-subjects" type="button">← 과목 목록</button><h2 id="student-subject-heading"></h2></div>
+          <div id="student-results-list" class="stack"></div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="assessment-dialog" class="dialog">
+      <form id="assessment-form" class="dialog-card">
+        <div class="dialog-title"><div><p class="eyebrow">NEW ASSESSMENT</p><h2>새 평가 만들기</h2></div><button class="icon-button" type="button" data-close="assessment-dialog">×</button></div>
+        <label for="assessment-subject">과목</label><select id="assessment-subject"></select>
+        <label for="assessment-unit">평가 단원</label><select id="assessment-unit" required></select>
+        <label for="assessment-date">평가 날짜</label><input id="assessment-date" type="date" required />
+        <label for="assessment-rubric">평가 기준</label><textarea id="assessment-rubric" rows="3" required placeholder="학생이 무엇을 할 수 있는지 적어 주세요."></textarea>
+        <div class="dialog-actions"><button class="button quiet" type="button" data-close="assessment-dialog">취소</button><button class="button primary" type="submit">평가 등록</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="student-dialog" class="dialog">
+      <form id="student-form" class="dialog-card">
+        <div class="dialog-title"><div><p class="eyebrow">CLASS ROSTER</p><h2 id="student-dialog-heading">학생 등록</h2></div><button class="icon-button" type="button" data-close="student-dialog">×</button></div>
+        <label for="student-number-input">출석번호</label><input id="student-number-input" inputmode="numeric" required />
+        <label for="student-name-input">학생 이름</label><input id="student-name-input" required />
+        <p class="subtle-note">새 학생에게는 4자리 PIN이 자동으로 지정됩니다. 기존 PIN은 유지됩니다.</p>
+        <p id="student-form-error" class="form-error hidden"></p>
+        <div class="dialog-actions"><button class="button quiet" type="button" data-close="student-dialog">취소</button><button class="button primary" type="submit">저장</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="levels-dialog" class="dialog wide-dialog">
+      <form id="levels-form" class="dialog-card">
+        <div class="dialog-title"><div><p class="eyebrow">ASSESSMENT RESULTS</p><h2 id="levels-dialog-heading"></h2></div><button class="icon-button" type="button" data-close="levels-dialog">×</button></div>
+        <div class="inline-controls"><label class="checkbox-line"><input id="select-all-levels" type="checkbox" />전체 선택</label><select id="common-level"></select><button class="small-button" id="apply-common-level" type="button">선택 학생에게 적용</button></div>
+        <div id="levels-entry-list" class="stack compact-stack"></div>
+        <div class="dialog-actions"><button class="button quiet" type="button" data-close="levels-dialog">취소</button><button class="button primary" type="submit">성취수준 저장</button></div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <?!= include('Client'); ?>
+  </body>
+</html>

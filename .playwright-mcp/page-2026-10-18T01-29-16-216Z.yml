@@ -1,0 +1,101 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary "주 메뉴" [ref=e3]:
+      - link "배움 기록 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#top"
+        - img [ref=e6]
+        - strong [ref=e11]: 배움 기록
+      - navigation [ref=e12]:
+        - button [ref=e13] [cursor=pointer]:
+          - img [ref=e14]
+        - button [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+    - main [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: 우리 반
+          - generic [ref=e25]: /
+          - strong [ref=e26]: 평가 관리
+        - generic [ref=e27]:
+          - generic [ref=e28]: 시연용 데이터
+          - button "도움말" [ref=e30] [cursor=pointer]:
+            - img [ref=e31]
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: 2025학년도 · 2학기
+            - heading "우리 반 배움 기록" [level=1] [ref=e38]
+            - paragraph [ref=e39]: 아이들의 노력과 성장을 차곡차곡 기록해 보세요.
+          - button "새 평가 만들기" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+            - text: 새 평가 만들기
+        - generic [ref=e43]:
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - strong [ref=e49]: 안전한 시연을 위해 예시 정보만 사용해 주세요
+            - paragraph [ref=e50]: 이 화면은 데모이며 학교 계정·보안 저장소와 연결되지 않았습니다. 실제 학생의 이름이나 평가 결과는 입력하지 마세요.
+          - button "안내 닫기" [ref=e51] [cursor=pointer]: ×
+        - generic "평가 요약" [ref=e52]:
+          - article [ref=e53]:
+            - generic [ref=e54]:
+              - generic [ref=e55]: 등록된 평가
+              - img [ref=e57]
+            - strong [ref=e60]: "3"
+            - generic [ref=e61]: 이번 학기
+          - article [ref=e62]:
+            - generic [ref=e63]:
+              - generic [ref=e64]: 우리 반 학생
+              - img [ref=e66]
+            - strong [ref=e69]: "3"
+            - generic [ref=e70]: 시연용 학생
+          - article [ref=e71]:
+            - generic [ref=e72]:
+              - generic [ref=e73]: 피드백 확인
+              - img [ref=e75]
+            - strong [ref=e78]:
+              - text: "2"
+              - emphasis [ref=e79]: / 3
+            - generic [ref=e80]: 선생님 검토 완료
+        - region "평가 목록" [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - paragraph [ref=e84]: CLASSROOM
+              - heading "평가 목록" [level=2] [ref=e85]
+            - generic [ref=e86]:
+              - img [ref=e87]
+              - searchbox "평가 검색" [ref=e90]
+          - generic [ref=e91]:
+            - article [ref=e92]:
+              - button "수 분수의 나눗셈 수학 입력 현황 3/3" [ref=e93] [cursor=pointer]:
+                - generic [ref=e94]: 수
+                - generic [ref=e95]:
+                  - strong [ref=e96]: 분수의 나눗셈
+                  - generic [ref=e98]: 수학
+                - generic [ref=e101]:
+                  - generic [ref=e102]: 입력 현황
+                  - strong [ref=e103]: 3/3
+                - img [ref=e104]
+            - article [ref=e106]:
+              - button "국 주장과 근거를 담은 글쓰기 국어 입력 현황 3/3" [ref=e107] [cursor=pointer]:
+                - generic [ref=e108]: 국
+                - generic [ref=e109]:
+                  - strong [ref=e110]: 주장과 근거를 담은 글쓰기
+                  - generic [ref=e112]: 국어
+                - generic [ref=e115]:
+                  - generic [ref=e116]: 입력 현황
+                  - strong [ref=e117]: 3/3
+                - img [ref=e118]
+            - article [ref=e120]:
+              - button "과 전기 회로 꾸미기 과학 입력 현황 3/3" [ref=e121] [cursor=pointer]:
+                - generic [ref=e122]: 과
+                - generic [ref=e123]:
+                  - strong [ref=e124]: 전기 회로 꾸미기
+                  - generic [ref=e126]: 과학
+                - generic [ref=e129]:
+                  - generic [ref=e130]: 입력 현황
+                  - strong [ref=e131]: 3/3
+                - img [ref=e132]
+        - generic [ref=e134]:
+          - generic [ref=e135]: 오늘도 아이들의 작은 성장을 응원합니다.
+          - generic [ref=e136]: 배움 기록 · 교사용 데모
+  - status

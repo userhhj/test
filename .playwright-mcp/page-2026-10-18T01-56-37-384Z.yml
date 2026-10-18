@@ -1,0 +1,148 @@
+- generic [ref=e2]:
+  - complementary "주 메뉴" [ref=e3]:
+    - link "평가 결과 조회 홈" [ref=e4] [cursor=pointer]:
+      - /url: "#top"
+      - img [ref=e6]
+      - strong [ref=e11]: 평가 결과 조회
+    - navigation [ref=e12]:
+      - button [ref=e13] [cursor=pointer]:
+        - img [ref=e14]
+      - button [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: 우리 반
+        - generic [ref=e25]: /
+        - strong [ref=e26]: 평가 관리
+      - generic [ref=e27]:
+        - generic [ref=e28]: 시연용 데이터
+        - button "도움말" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - paragraph [ref=e37]: 2025학년도 · 2학기
+          - heading "평가 관리" [level=1] [ref=e38]
+        - button "새 평가 만들기" [ref=e39] [cursor=pointer]:
+          - img [ref=e40]
+          - text: 새 평가 만들기
+      - generic [ref=e42]:
+        - img [ref=e44]
+        - generic [ref=e47]:
+          - strong [ref=e48]: 안전한 시연을 위해 예시 정보만 사용해 주세요
+          - paragraph [ref=e49]: 이 화면은 데모이며 학교 계정·보안 저장소와 연결되지 않았습니다. 실제 학생의 이름이나 평가 결과는 입력하지 마세요.
+        - button "안내 닫기" [ref=e50] [cursor=pointer]: ×
+      - generic "평가 요약" [ref=e51]:
+        - article [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]: 등록된 평가
+            - img [ref=e56]
+          - strong [ref=e59]: "8"
+          - generic [ref=e60]: 이번 학기
+        - article [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]: 우리 반 학생
+            - img [ref=e65]
+          - strong [ref=e68]: "25"
+          - generic [ref=e69]: 6학년 6반
+        - article [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 피드백 확인
+            - img [ref=e74]
+          - strong [ref=e77]:
+            - text: "5"
+            - emphasis [ref=e78]: / 8
+          - generic [ref=e79]: 선생님 검토 완료
+      - region "평가 목록" [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - paragraph [ref=e83]: CLASSROOM
+            - heading "평가 목록" [level=2] [ref=e84]
+          - generic [ref=e85]:
+            - img [ref=e86]
+            - searchbox "평가 검색" [ref=e89]
+        - generic [ref=e90]:
+          - article [ref=e91]:
+            - button "수 분수의 나눗셈 수학 입력 현황 25/25" [ref=e92] [cursor=pointer]:
+              - generic [ref=e93]: 수
+              - generic [ref=e94]:
+                - strong [ref=e95]: 분수의 나눗셈
+                - generic [ref=e97]: 수학
+              - generic [ref=e100]:
+                - generic [ref=e101]: 입력 현황
+                - strong [ref=e102]: 25/25
+              - img [ref=e103]
+          - article [ref=e105]:
+            - button "국 주장과 근거를 담은 글쓰기 국어 입력 현황 25/25" [ref=e106] [cursor=pointer]:
+              - generic [ref=e107]: 국
+              - generic [ref=e108]:
+                - strong [ref=e109]: 주장과 근거를 담은 글쓰기
+                - generic [ref=e111]: 국어
+              - generic [ref=e114]:
+                - generic [ref=e115]: 입력 현황
+                - strong [ref=e116]: 25/25
+              - img [ref=e117]
+          - article [ref=e119]:
+            - button "과 전기 회로 꾸미기 과학 입력 현황 25/25" [ref=e120] [cursor=pointer]:
+              - generic [ref=e121]: 과
+              - generic [ref=e122]:
+                - strong [ref=e123]: 전기 회로 꾸미기
+                - generic [ref=e125]: 과학
+              - generic [ref=e128]:
+                - generic [ref=e129]: 입력 현황
+                - strong [ref=e130]: 25/25
+              - img [ref=e131]
+          - article [ref=e133]:
+            - button "사 민주주의와 시민 참여 사회 입력 현황 25/25" [ref=e134] [cursor=pointer]:
+              - generic [ref=e135]: 사
+              - generic [ref=e136]:
+                - strong [ref=e137]: 민주주의와 시민 참여
+                - generic [ref=e139]: 사회
+              - generic [ref=e142]:
+                - generic [ref=e143]: 입력 현황
+                - strong [ref=e144]: 25/25
+              - img [ref=e145]
+          - article [ref=e147]:
+            - button "영 자기소개와 학교생활 영어 입력 현황 25/25" [ref=e148] [cursor=pointer]:
+              - generic [ref=e149]: 영
+              - generic [ref=e150]:
+                - strong [ref=e151]: 자기소개와 학교생활
+                - generic [ref=e153]: 영어
+              - generic [ref=e156]:
+                - generic [ref=e157]: 입력 현황
+                - strong [ref=e158]: 25/25
+              - img [ref=e159]
+          - article [ref=e161]:
+            - button "수 비와 비율 수학 입력 현황 25/25" [ref=e162] [cursor=pointer]:
+              - generic [ref=e163]: 수
+              - generic [ref=e164]:
+                - strong [ref=e165]: 비와 비율
+                - generic [ref=e167]: 수학
+              - generic [ref=e170]:
+                - generic [ref=e171]: 입력 현황
+                - strong [ref=e172]: 25/25
+              - img [ref=e173]
+          - article [ref=e175]:
+            - button "국 자료를 활용한 발표 국어 입력 현황 25/25" [ref=e176] [cursor=pointer]:
+              - generic [ref=e177]: 국
+              - generic [ref=e178]:
+                - strong [ref=e179]: 자료를 활용한 발표
+                - generic [ref=e181]: 국어
+              - generic [ref=e184]:
+                - generic [ref=e185]: 입력 현황
+                - strong [ref=e186]: 25/25
+              - img [ref=e187]
+          - article [ref=e189]:
+            - button "과 계절의 변화 과학 입력 현황 25/25" [ref=e190] [cursor=pointer]:
+              - generic [ref=e191]: 과
+              - generic [ref=e192]:
+                - strong [ref=e193]: 계절의 변화
+                - generic [ref=e195]: 과학
+              - generic [ref=e198]:
+                - generic [ref=e199]: 입력 현황
+                - strong [ref=e200]: 25/25
+              - img [ref=e201]
+      - generic [ref=e203]:
+        - generic [ref=e204]: 우리 반 수행평가 관리
+        - generic [ref=e205]: 교사용 데모

@@ -1,0 +1,105 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary "주 메뉴" [ref=e3]:
+      - link "평가 결과 조회 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#top"
+        - img [ref=e6]
+        - strong [ref=e11]: 평가 결과 조회
+      - navigation [ref=e12]:
+        - button [ref=e13] [cursor=pointer]:
+          - img [ref=e14]
+        - button [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - button [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: 우리 반
+          - generic [ref=e29]: /
+          - strong [ref=e30]: 평가 관리
+        - generic [ref=e31]:
+          - generic [ref=e32]: 시연용 데이터
+          - button "도움말" [ref=e34] [cursor=pointer]:
+            - img [ref=e35]
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: 2025학년도 · 2학기
+            - heading "평가 관리" [level=1] [ref=e42]
+          - button "새 평가 만들기" [ref=e43] [cursor=pointer]:
+            - img [ref=e44]
+            - text: 새 평가 만들기
+        - generic [ref=e46]:
+          - img [ref=e48]
+          - generic [ref=e51]:
+            - strong [ref=e52]: 안전한 시연을 위해 예시 정보만 사용해 주세요
+            - paragraph [ref=e53]: 이 화면은 데모이며 학교 계정·보안 저장소와 연결되지 않았습니다. 실제 학생의 이름이나 평가 결과는 입력하지 마세요.
+          - button "안내 닫기" [ref=e54] [cursor=pointer]: ×
+        - generic "평가 요약" [ref=e55]:
+          - article [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: 등록된 평가
+              - img [ref=e60]
+            - strong [ref=e63]: "8"
+            - generic [ref=e64]: 이번 학기
+          - article [ref=e65]:
+            - generic [ref=e66]:
+              - generic [ref=e67]: 우리 반 학생
+              - img [ref=e69]
+            - strong [ref=e72]: "25"
+            - generic [ref=e73]: 6학년 6반
+          - article [ref=e74]:
+            - generic [ref=e75]:
+              - generic [ref=e76]: 피드백 확인
+              - img [ref=e78]
+            - strong [ref=e81]:
+              - text: "5"
+              - emphasis [ref=e82]: / 8
+            - generic [ref=e83]: 선생님 검토 완료
+        - region "과목 선택" [ref=e84]:
+          - generic [ref=e86]:
+            - paragraph [ref=e87]: SUBJECTS
+            - heading "과목 선택" [level=2] [ref=e88]
+            - paragraph [ref=e89]: 과목을 선택하면 해당 과목의 수행평가 목록이 열립니다.
+          - generic [ref=e90]:
+            - button "국 국어 2개 수행평가" [ref=e91] [cursor=pointer]:
+              - generic [ref=e92]: 국
+              - generic [ref=e93]:
+                - strong [ref=e94]: 국어
+                - generic [ref=e95]: 2개 수행평가
+              - img [ref=e96]
+            - button "수 수학 2개 수행평가" [ref=e98] [cursor=pointer]:
+              - generic [ref=e99]: 수
+              - generic [ref=e100]:
+                - strong [ref=e101]: 수학
+                - generic [ref=e102]: 2개 수행평가
+              - img [ref=e103]
+            - button "사 사회 1개 수행평가" [ref=e105] [cursor=pointer]:
+              - generic [ref=e106]: 사
+              - generic [ref=e107]:
+                - strong [ref=e108]: 사회
+                - generic [ref=e109]: 1개 수행평가
+              - img [ref=e110]
+            - button "과 과학 2개 수행평가" [ref=e112] [cursor=pointer]:
+              - generic [ref=e113]: 과
+              - generic [ref=e114]:
+                - strong [ref=e115]: 과학
+                - generic [ref=e116]: 2개 수행평가
+              - img [ref=e117]
+            - button "영 영어 1개 수행평가" [ref=e119] [cursor=pointer]:
+              - generic [ref=e120]: 영
+              - generic [ref=e121]:
+                - strong [ref=e122]: 영어
+                - generic [ref=e123]: 1개 수행평가
+              - img [ref=e124]
+            - button "기 기타 0개 수행평가" [ref=e126] [cursor=pointer]:
+              - generic [ref=e127]: 기
+              - generic [ref=e128]:
+                - strong [ref=e129]: 기타
+                - generic [ref=e130]: 0개 수행평가
+              - img [ref=e131]
+        - generic [ref=e133]:
+          - generic [ref=e134]: 우리 반 수행평가 관리
+          - generic [ref=e135]: 교사용 데모
+  - status

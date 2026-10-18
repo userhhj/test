@@ -1,0 +1,436 @@
+<script>
+const SUBJECTS = ['국어', '수학', '사회', '과학', '영어', '기타'];
+const LEVELS = ['매우 잘함', '잘함', '보통', '노력 요함', '미실시'];
+const UNITS = {
+  '국어': ['주장과 근거를 담은 글쓰기', '작품 속 인물의 삶', '자료를 활용한 발표', '관용 표현 알아보기', '글의 구조와 요약'],
+  '수학': ['분수의 나눗셈', '소수의 나눗셈', '비와 비율', '비례식과 비례배분', '원의 넓이', '직육면체의 부피와 겉넓이'],
+  '사회': ['민주주의와 시민 참여', '우리나라의 경제 성장', '세계 여러 나라의 자연과 문화', '지구촌의 평화와 발전', '역사 속 인물과 사건'],
+  '과학': ['전기 회로 꾸미기', '계절의 변화', '연소와 소화', '우리 몸의 구조와 기능', '에너지와 생활'],
+  '영어': ['자기소개와 학교생활', '경험을 묻고 답하기', '길 안내하기', '의견과 이유 말하기', '읽고 핵심 정보 파악하기'],
+  '기타': ['주제 탐구', '프로젝트 학습', '발표와 토의']
+};
+let teacherData = { students: [], assessments: [] };
+let selectedAssessmentSubject = null;
+let selectedReviewSubject = null;
+let selectedReviewAssessment = null;
+let selectedStudent = null;
+let selectedStudentSubject = null;
+let editingAttendanceNo = null;
+let toastTimer;
+
+function rpc(name, args = []) {
+  return new Promise((resolve, reject) => {
+    const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler((error) => reject(new Error(error.message || String(error))));
+    runner[name].apply(runner, args);
+  });
+}
+
+function esc(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+}
+
+function subjectInitial(subject) {
+  return ({ '국어': '국', '수학': '수', '사회': '사', '과학': '과', '영어': '영', '기타': '기' })[subject] || subject.slice(0, 1);
+}
+
+function levelClass(level) {
+  return ({ '매우 잘함': 'excellent', '잘함': 'good', '보통': 'usual', '노력 요함': 'effort', '미실시': 'missed' })[level] || '';
+}
+
+function toast(message) {
+  const node = document.querySelector('#toast');
+  node.textContent = message;
+  node.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.classList.remove('show'), 2600);
+}
+
+function setBusy(button, busy, label) {
+  if (!button) return;
+  if (busy) {
+    button.dataset.originalLabel = button.textContent;
+    button.textContent = label || '저장 중…';
+    button.disabled = true;
+  } else {
+    button.textContent = button.dataset.originalLabel || button.textContent;
+    button.disabled = false;
+  }
+}
+
+async function initialize() {
+  try {
+    const access = await rpc('getAccessInfo');
+    document.querySelector('#loading-view').classList.add('hidden');
+    if (access.teacher) {
+      document.querySelector('#teacher-view').classList.remove('hidden');
+      document.querySelector('#signed-in-label').textContent = '교사';
+      await reloadTeacherData();
+    } else {
+      document.querySelector('#student-login-view').classList.remove('hidden');
+    }
+  } catch (error) {
+    document.querySelector('#loading-view').innerHTML = `<div class="empty">시트를 준비한 뒤 다시 열어 주세요.<br>${esc(error.message)}</div>`;
+  }
+}
+
+async function reloadTeacherData() {
+  teacherData = await rpc('getTeacherData');
+  document.querySelector('#student-total-badge').textContent = teacherData.students.length;
+  renderTeacherSubjects();
+  renderTeacherStudents();
+  renderReviewSubjects();
+  if (selectedAssessmentSubject) renderTeacherAssessments();
+  if (selectedReviewSubject) renderReviewAssessments();
+}
+
+function teacherPage(page) {
+  document.querySelectorAll('.teacher-page').forEach((section) => section.classList.add('hidden'));
+  document.querySelector(`#teacher-${page}-page`).classList.remove('hidden');
+  document.querySelectorAll('.teacher-tabs .tab').forEach((button) => button.classList.toggle('active', button.dataset.page === page));
+  if (page === 'reviews') renderReviewSubjects();
+}
+
+function renderSubjectCards(containerId, countText, onClickAttr, getCount) {
+  const container = document.querySelector(containerId);
+  container.innerHTML = SUBJECTS.map((subject) => {
+    const stats = getCount(subject);
+    if (!stats.show) return '';
+    return `<button class="subject-card" type="button" ${onClickAttr}="${esc(subject)}"><span class="subject-mark">${esc(subjectInitial(subject))}</span><span class="subject-card-copy"><strong>${esc(subject)}</strong><small>${esc(countText(stats))}</small></span><span class="arrow">›</span></button>`;
+  }).join('') || '<div class="empty">표시할 과목이 없습니다.</div>';
+}
+
+function renderTeacherSubjects() {
+  renderSubjectCards('#teacher-subject-grid', (stats) => `${stats.count}개 수행평가`, 'data-teacher-subject', (subject) => {
+    const count = teacherData.assessments.filter((assessment) => assessment.subject === subject).length;
+    return { count: count, show: count > 0 };
+  });
+}
+
+function openTeacherSubject(subject) {
+  selectedAssessmentSubject = subject;
+  document.querySelector('#teacher-subject-grid').classList.add('hidden');
+  document.querySelector('#teacher-assessment-list-view').classList.remove('hidden');
+  document.querySelector('#teacher-assessment-heading').textContent = `${subject} 수행평가`;
+  renderTeacherAssessments();
+}
+
+function renderTeacherAssessments() {
+  const assessments = teacherData.assessments.filter((assessment) => assessment.subject === selectedAssessmentSubject);
+  document.querySelector('#teacher-assessment-list').innerHTML = assessments.length ? assessments.map((assessment) => {
+    const entered = Object.keys(assessment.levels).length;
+    const pendingRetakes = teacherData.students.filter((student) => assessment.retakes[student.number] === 'yes').length;
+    const id = esc(assessment.id);
+    const retakeRows = teacherData.students.map((student) => `<div class="student-row"><strong>${esc(student.number)}번</strong><span>${esc(student.name)}</span><span>${esc(assessment.retakes[student.number] === 'yes' ? '재시험 희망' : assessment.retakes[student.number] === 'no' ? '희망 안 함' : '미응답')}</span></div>`).join('');
+    return `<details class="assessment-card"><summary><span class="subject-mark">${esc(subjectInitial(assessment.subject))}</span><span class="assessment-name"><strong>${esc(assessment.title)}</strong><small>${esc(assessment.date)} · ${esc(assessment.subject)}</small></span><span class="assessment-progress">${entered}/${teacherData.students.length}명 입력</span></summary><div class="assessment-content"><p class="rubric">${esc(assessment.rubric)}</p><div class="row-actions"><button class="small-button" type="button" data-enter-levels="${id}">성취수준 입력</button><span class="subtle-note">재시험 희망 ${pendingRetakes}명</span></div><details class="retake-details"><summary>학생별 재시험 응답 보기</summary>${retakeRows}</details></div></details>`;
+  }).join('') : '<div class="empty">이 과목에는 아직 수행평가가 없습니다.</div>';
+}
+
+function renderTeacherStudents(filter = document.querySelector('#student-search').value) {
+  const query = filter.trim().toLowerCase();
+  const students = teacherData.students.filter((student) => `${student.number} ${student.name}`.toLowerCase().includes(query));
+  document.querySelector('#teacher-student-list').innerHTML = students.length ? students.map((student) => {
+    const completed = teacherData.assessments.filter((assessment) => assessment.levels[student.number]).length;
+    return `<div class="student-row"><strong>${esc(student.number)}번</strong><span>${esc(student.name)}</span><code>${esc(student.pin)}</code><span class="student-progress">${completed}/${teacherData.assessments.length}개 평가</span><button class="small-button" type="button" data-edit-student="${esc(student.number)}">수정</button></div>`;
+  }).join('') : '<div class="empty">검색한 학생이 없습니다.</div>';
+}
+
+function renderReviewSubjects() {
+  const pendingForSubject = (subject) => teacherData.assessments.filter((assessment) => assessment.subject === subject).reduce((sum, assessment) => sum + teacherData.students.filter((student) => assessment.levels[student.number] && assessment.levels[student.number] !== '미실시' && !assessment.feedbackReviewed[student.number]).length, 0);
+  renderSubjectCards('#review-subject-grid', (stats) => stats.count ? `${stats.count}명 검토 대기` : '검토 대기 없음', 'data-review-subject', (subject) => {
+    const count = teacherData.assessments.filter((assessment) => assessment.subject === subject).length;
+    return { count: pendingForSubject(subject), show: count > 0 };
+  });
+  document.querySelector('#review-total-badge').textContent = SUBJECTS.reduce((sum, subject) => sum + pendingForSubject(subject), 0);
+}
+
+function openReviewSubject(subject) {
+  selectedReviewSubject = subject;
+  document.querySelector('#review-subject-grid').classList.add('hidden');
+  document.querySelector('#review-assessment-list-view').classList.remove('hidden');
+  document.querySelector('#review-assessment-heading').textContent = `${subject} 검토 대기 평가`;
+  renderReviewAssessments();
+}
+
+function renderReviewAssessments() {
+  const assessments = teacherData.assessments.filter((assessment) => assessment.subject === selectedReviewSubject).map((assessment) => ({
+    assessment: assessment,
+    pending: teacherData.students.filter((student) => assessment.levels[student.number] && assessment.levels[student.number] !== '미실시' && !assessment.feedbackReviewed[student.number]).length
+  })).filter((row) => row.pending);
+  document.querySelector('#review-assessment-list').innerHTML = assessments.length ? assessments.map(({ assessment, pending }) => `<article class="review-assessment"><div class="review-assessment-head"><div><strong>${esc(assessment.title)}</strong><small>${esc(assessment.date)} · ${pending}명 검토 대기</small></div><button class="button primary" type="button" data-review-assessment="${esc(assessment.id)}">전체 학생 검토</button></div><p class="rubric">${esc(assessment.rubric)}</p></article>`).join('') : '<div class="empty">이 과목에는 검토 대기 중인 피드백이 없습니다.</div>';
+}
+
+function openReviewEditor(assessmentId) {
+  selectedReviewAssessment = teacherData.assessments.find((assessment) => assessment.id === assessmentId);
+  if (!selectedReviewAssessment) return;
+  document.querySelector('#review-assessment-list-view').classList.add('hidden');
+  document.querySelector('#review-editor-view').classList.remove('hidden');
+  document.querySelector('#review-editor-heading').textContent = `${selectedReviewAssessment.subject} · ${selectedReviewAssessment.title}`;
+  document.querySelector('#review-editor-list').innerHTML = teacherData.students.map((student) => {
+    const level = selectedReviewAssessment.levels[student.number];
+    const content = !level ? '<span class="review-state">결과 미입력</span>' : level === '미실시' ? '<span class="review-state">미실시 · 피드백 없음</span>' : `<div class="review-feedback"><span class="level ${level === '미실시' ? 'missed' : ''}">${esc(level)}</span><textarea data-review-feedback="${esc(student.number)}" aria-label="${esc(student.number)}번 피드백">${esc(selectedReviewAssessment.feedback[student.number] || '')}</textarea><small>${selectedReviewAssessment.feedbackReviewed[student.number] ? '검토 완료' : '검토 대기'}</small></div>`;
+    return `<div class="review-row"><strong>${esc(student.number)}번 ${esc(student.name)}</strong>${content}</div>`;
+  }).join('');
+}
+
+function openLevelsDialog(assessmentId) {
+  const assessment = teacherData.assessments.find((item) => item.id === assessmentId);
+  if (!assessment) return;
+  document.querySelector('#levels-dialog-heading').textContent = `${assessment.subject} · ${assessment.title}`;
+  document.querySelector('#common-level').innerHTML = `<option value="">성취수준 선택</option>${LEVELS.map((level) => `<option value="${esc(level)}">${esc(level)}</option>`).join('')}`;
+  document.querySelector('#levels-entry-list').innerHTML = teacherData.students.map((student) => `<div class="entry-line"><label class="checkbox-line"><input type="checkbox" data-level-check="${esc(student.number)}" /><span>${esc(student.number)}번</span></label><strong>${esc(student.name)}</strong><select data-level-number="${esc(student.number)}"><option value="">수준 선택</option>${LEVELS.map((level) => `<option value="${esc(level)}" ${assessment.levels[student.number] === level ? 'selected' : ''}>${esc(level)}</option>`).join('')}</select></div>`).join('');
+  document.querySelector('#select-all-levels').checked = false;
+  document.querySelector('#levels-form').dataset.assessmentId = assessment.id;
+  document.querySelector('#levels-dialog').showModal();
+}
+
+function updateAssessmentUnitOptions(subject) {
+  document.querySelector('#assessment-unit').innerHTML = `<option value="">단원을 선택하세요</option>${(UNITS[subject] || UNITS['기타']).map((unit) => `<option value="${esc(unit)}">${esc(unit)}</option>`).join('')}`;
+}
+
+function openStudentDialog(student) {
+  editingAttendanceNo = student ? String(student.number) : null;
+  document.querySelector('#student-form').reset();
+  document.querySelector('#student-dialog-heading').textContent = student ? '학생 정보 수정' : '학생 등록';
+  document.querySelector('#student-number-input').value = student ? student.number : '';
+  document.querySelector('#student-name-input').value = student ? student.name : '';
+  document.querySelector('#student-form-error').classList.add('hidden');
+  document.querySelector('#student-dialog').showModal();
+}
+
+function renderStudentSubjects() {
+  const counts = SUBJECTS.map((subject) => ({ subject: subject, count: selectedStudent.assessments.filter((item) => item.subject === subject).length })).filter((item) => item.count);
+  document.querySelector('#student-subject-grid').innerHTML = counts.map(({ subject, count }) => `<button class="subject-card" type="button" data-student-subject="${esc(subject)}"><span class="subject-mark">${esc(subjectInitial(subject))}</span><span class="subject-card-copy"><strong>${esc(subject)}</strong><small>${count}개 평가 결과</small></span><span class="arrow">›</span></button>`).join('') || '<div class="empty">확인할 평가 결과가 없습니다.</div>';
+  document.querySelector('#student-result-count').textContent = `확인 가능한 평가 ${selectedStudent.assessments.length}건 · 과목을 선택하세요.`;
+}
+
+function renderStudentResults(subject) {
+  selectedStudentSubject = subject;
+  document.querySelector('#student-subject-grid').classList.add('hidden');
+  document.querySelector('#student-results-view').classList.remove('hidden');
+  document.querySelector('#student-subject-heading').textContent = `${subject} 평가 결과`;
+  const assessments = selectedStudent.assessments.filter((item) => item.subject === subject);
+  document.querySelector('#student-results-list').innerHTML = assessments.map((item) => {
+    const feedback = item.level === '미실시' ? '평가에 참여하지 않아 미실시로 처리되었습니다.' : item.feedbackReviewed ? item.feedback : '선생님이 피드백을 확인하고 있습니다.';
+    const retake = item.retake || '';
+    return `<article class="student-result-card"><div class="student-result-head"><div><small>${esc(item.subject)} · ${esc(item.date)}</small><h3>${esc(item.title)}</h3></div><span class="level ${levelClass(item.level)}">${esc(item.level)}</span></div><p class="feedback-text">${esc(feedback)}</p><div class="retake-controls"><button type="button" data-retake="yes" data-assessment-id="${esc(item.id)}" class="${retake === 'yes' ? 'selected' : ''}">재시험 희망</button><button type="button" data-retake="no" data-assessment-id="${esc(item.id)}" class="${retake === 'no' ? 'selected' : ''}">이번 결과로 마무리</button></div></article>`;
+  }).join('');
+}
+
+async function refreshTeacher() {
+  teacherData = await rpc('getTeacherData');
+  renderTeacherSubjects();
+  renderTeacherStudents(document.querySelector('#student-search').value);
+  renderReviewSubjects();
+  if (selectedAssessmentSubject) renderTeacherAssessments();
+  if (selectedReviewSubject) renderReviewAssessments();
+}
+
+document.addEventListener('DOMContentLoaded', initialize);
+
+document.querySelectorAll('.teacher-tabs .tab').forEach((button) => button.addEventListener('click', () => {
+  document.querySelectorAll('.teacher-page').forEach((page) => page.classList.add('hidden'));
+  document.querySelector(`#teacher-${button.dataset.page}-page`).classList.remove('hidden');
+  document.querySelectorAll('.teacher-tabs .tab').forEach((tab) => tab.classList.toggle('active', tab === button));
+}));
+
+document.querySelector('#teacher-subject-grid').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-teacher-subject]');
+  if (!button) return;
+  selectedAssessmentSubject = button.dataset.teacherSubject;
+  document.querySelector('#teacher-subject-grid').classList.add('hidden');
+  document.querySelector('#teacher-assessment-list-view').classList.remove('hidden');
+  document.querySelector('#teacher-assessment-heading').textContent = `${selectedAssessmentSubject} 수행평가`;
+  renderTeacherAssessments();
+});
+document.querySelector('#teacher-back-subjects').addEventListener('click', () => {
+  selectedAssessmentSubject = null;
+  document.querySelector('#teacher-assessment-list-view').classList.add('hidden');
+  document.querySelector('#teacher-subject-grid').classList.remove('hidden');
+  renderTeacherSubjects();
+});
+document.querySelector('#teacher-assessment-list').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-enter-levels]');
+  if (button) openLevelsDialog(button.dataset.enterLevels);
+});
+
+document.querySelector('#review-subject-grid').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-review-subject]');
+  if (!button) return;
+  selectedReviewSubject = button.dataset.reviewSubject;
+  document.querySelector('#review-subject-grid').classList.add('hidden');
+  document.querySelector('#review-assessment-list-view').classList.remove('hidden');
+  document.querySelector('#review-assessment-heading').textContent = `${selectedReviewSubject} 검토 대기 평가`;
+  renderReviewAssessments();
+});
+document.querySelector('#review-back-subjects').addEventListener('click', () => {
+  selectedReviewSubject = null;
+  document.querySelector('#review-assessment-list-view').classList.add('hidden');
+  document.querySelector('#review-editor-view').classList.add('hidden');
+  document.querySelector('#review-subject-grid').classList.remove('hidden');
+  renderReviewSubjects();
+});
+document.querySelector('#review-assessment-list').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-review-assessment]');
+  if (button) openReviewEditor(button.dataset.reviewAssessment);
+});
+document.querySelector('#review-back-assessments').addEventListener('click', () => {
+  selectedReviewAssessment = null;
+  document.querySelector('#review-editor-view').classList.add('hidden');
+  document.querySelector('#review-assessment-list-view').classList.remove('hidden');
+});
+
+document.querySelector('#student-login-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  setBusy(button, true, '확인 중…');
+  try {
+    selectedStudent = await rpc('loginStudent', [document.querySelector('#login-number').value, document.querySelector('#login-pin').value]);
+    document.querySelector('#student-login-view').classList.add('hidden');
+    document.querySelector('#student-view').classList.remove('hidden');
+    document.querySelector('#student-name-heading').textContent = selectedStudent.student.name;
+    document.querySelector('#student-subject-grid').classList.remove('hidden');
+    document.querySelector('#student-results-view').classList.add('hidden');
+    selectedStudentSubject = null;
+    renderStudentSubjects();
+  } catch (error) {
+    const node = document.querySelector('#login-error');
+    node.textContent = error.message;
+    node.classList.remove('hidden');
+  } finally {
+    setBusy(button, false);
+  }
+});
+
+document.querySelector('#student-subject-grid').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-student-subject]');
+  if (button) renderStudentResults(button.dataset.studentSubject);
+});
+document.querySelector('#student-back-subjects').addEventListener('click', () => {
+  selectedStudentSubject = null;
+  document.querySelector('#student-results-view').classList.add('hidden');
+  document.querySelector('#student-subject-grid').classList.remove('hidden');
+});
+document.querySelector('#student-results-list').addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-retake]');
+  if (!button) return;
+  try {
+    await rpc('saveRetake', [button.dataset.assessmentId, button.dataset.retake]);
+    const result = selectedStudent.assessments.find((item) => item.id === button.dataset.assessmentId);
+    result.retake = button.dataset.retake;
+    renderStudentResults(selectedStudentSubject);
+    toast('재시험 의사를 저장했습니다.');
+  } catch (error) { toast(error.message); }
+});
+document.querySelector('#student-logout').addEventListener('click', async () => {
+  try { await rpc('logoutStudent'); } catch (error) {}
+  selectedStudent = null;
+  document.querySelector('#student-view').classList.add('hidden');
+  document.querySelector('#student-login-view').classList.remove('hidden');
+  document.querySelector('#student-login-form').reset();
+});
+
+document.querySelector('#student-search').addEventListener('input', (event) => renderTeacherStudents(event.target.value));
+document.querySelector('#teacher-student-list').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-edit-student]');
+  if (!button) return;
+  openStudentDialog(teacherData.students.find((student) => String(student.number) === button.dataset.editStudent));
+});
+document.querySelector('#add-student-button').addEventListener('click', () => openStudentDialog(null));
+
+document.querySelector('#assessment-subject').addEventListener('change', (event) => updateAssessmentUnitOptions(event.target.value));
+document.querySelector('#new-assessment-button').addEventListener('click', () => {
+  document.querySelector('#assessment-form').reset();
+  updateAssessmentUnitOptions(document.querySelector('#assessment-subject').value);
+  document.querySelector('#assessment-date').value = new Date().toISOString().slice(0, 10);
+  document.querySelector('#assessment-dialog').showModal();
+});
+document.querySelector('#assessment-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  setBusy(button, true);
+  try {
+    const subject = document.querySelector('#assessment-subject').value;
+    await rpc('createAssessment', [{ subject: subject, unit: document.querySelector('#assessment-unit').value, date: document.querySelector('#assessment-date').value, rubric: document.querySelector('#assessment-rubric').value }]);
+    document.querySelector('#assessment-dialog').close();
+    await refreshTeacher();
+    selectedAssessmentSubject = subject;
+    document.querySelector('#teacher-subject-grid').classList.add('hidden');
+    document.querySelector('#teacher-assessment-list-view').classList.remove('hidden');
+    document.querySelector('#teacher-assessment-heading').textContent = `${subject} 수행평가`;
+    renderTeacherAssessments();
+    toast('평가를 등록했습니다.');
+  } catch (error) { toast(error.message); }
+  finally { setBusy(button, false); }
+});
+
+document.querySelector('#student-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  setBusy(button, true);
+  try {
+    const result = await rpc('saveStudent', [{ previousNumber: editingAttendanceNo, number: document.querySelector('#student-number-input').value, name: document.querySelector('#student-name-input').value }]);
+    document.querySelector('#student-dialog').close();
+    await refreshTeacher();
+    toast(result.updated ? '학생 정보를 수정했습니다.' : `${result.number}번 학생 등록 완료 · PIN ${result.pin}`);
+  } catch (error) {
+    const node = document.querySelector('#student-form-error');
+    node.textContent = error.message;
+    node.classList.remove('hidden');
+  } finally { setBusy(button, false); }
+});
+
+document.querySelector('#select-all-levels').addEventListener('change', (event) => {
+  document.querySelectorAll('[data-level-check]').forEach((checkbox) => { checkbox.checked = event.target.checked; });
+});
+document.querySelector('#levels-entry-list').addEventListener('change', (event) => {
+  if (!event.target.matches('[data-level-check]')) return;
+  const checkboxes = [...document.querySelectorAll('[data-level-check]')];
+  const checked = checkboxes.filter((checkbox) => checkbox.checked).length;
+  const master = document.querySelector('#select-all-levels');
+  master.checked = checked === checkboxes.length;
+  master.indeterminate = checked > 0 && checked < checkboxes.length;
+});
+document.querySelector('#apply-common-level').addEventListener('click', () => {
+  const level = document.querySelector('#common-level').value;
+  const checked = [...document.querySelectorAll('[data-level-check]:checked')];
+  if (!checked.length || !level) return toast('학생과 성취수준을 선택해 주세요.');
+  checked.forEach((checkbox) => { document.querySelector(`[data-level-number="${checkbox.dataset.levelCheck}"]`).value = level; });
+  toast(`${checked.length}명에게 적용했습니다.`);
+});
+document.querySelector('#levels-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const assessmentId = event.currentTarget.dataset.assessmentId;
+  const entries = teacherData.students.map((student) => ({ number: String(student.number), level: document.querySelector(`[data-level-number="${student.number}"]`).value }));
+  if (entries.some((entry) => !entry.level)) return toast('모든 학생의 성취수준을 선택해 주세요.');
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  setBusy(button, true);
+  try {
+    await rpc('saveLevels', [assessmentId, entries]);
+    document.querySelector('#levels-dialog').close();
+    await refreshTeacher();
+    toast('성취수준과 문장 제안을 저장했습니다.');
+  } catch (error) { toast(error.message); }
+  finally { setBusy(button, false); }
+});
+
+document.querySelector('#publish-all-feedback').addEventListener('click', async () => {
+  if (!selectedReviewAssessment) return;
+  const entries = teacherData.students
+    .filter((student) => selectedReviewAssessment.levels[student.number] && selectedReviewAssessment.levels[student.number] !== '미실시')
+    .map((student) => ({ number: String(student.number), feedback: document.querySelector(`[data-review-feedback="${student.number}"]`)?.value.trim() || '' }));
+  if (entries.some((entry) => !entry.feedback)) return toast('피드백을 비워둘 수 없습니다.');
+  const button = document.querySelector('#publish-all-feedback');
+  setBusy(button, true, '공개 중…');
+  try {
+    await rpc('publishFeedback', [selectedReviewAssessment.id, entries]);
+    selectedReviewAssessment = null;
+    document.querySelector('#review-editor-view').classList.add('hidden');
+    document.querySelector('#review-assessment-list-view').classList.remove('hidden');
+    await refreshTeacher();
+    toast(`${entries.length}명의 피드백을 저장하고 공개했습니다.`);
+  } catch (error) { toast(error.message); }
+  finally { setBusy(button, false); }
+});
+
+document.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', () => document.querySelector(`#${button.dataset.close}`).close()));
+</script>
