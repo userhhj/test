@@ -1,5 +1,6 @@
 const LEVELS = ['매우 잘함', '잘함', '보통', '노력 요함', '미실시'];
 const SUBJECTS = ['국어', '수학', '사회', '과학', '영어', '기타'];
+const SETTINGS_KEY = 'learning-journal-class-settings-v1';
 const UNIT_OPTIONS = {
   '수학': ['분수의 나눗셈', '소수의 나눗셈', '비와 비율', '비례식과 비례배분', '원의 넓이', '직육면체의 부피와 겉넓이'],
   '국어': ['주장과 근거를 담은 글쓰기', '작품 속 인물의 삶', '자료를 활용한 발표', '관용 표현 알아보기', '글의 구조와 요약'],
@@ -43,6 +44,7 @@ demoSeed.assessments.forEach((assessment, assessmentIndex) => {
 });
 
 let data = loadData();
+let classSettings = loadClassSettings();
 let activeAssessmentId = null;
 let activeSubject = null;
 let activeReviewSubject = null;
@@ -82,6 +84,31 @@ function saveData() {
       showToast('브라우저 저장소를 사용할 수 없어 새로고침하면 변경 내용이 사라질 수 있어요.');
     }
   }
+}
+
+function loadClassSettings() {
+  const defaults = { schoolName: '햇살초등학교', grade: '6', classNumber: '6' };
+  try {
+    return { ...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') };
+  } catch {
+    return defaults;
+  }
+}
+
+function saveClassSettings() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(classSettings));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function renderClassInfo() {
+  const classLabel = `${classSettings.grade}학년 ${classSettings.classNumber}반`;
+  document.querySelector('#school-display').textContent = classSettings.schoolName;
+  document.querySelector('#class-display').textContent = classLabel;
+  document.querySelector('#class-stat-label').textContent = classLabel;
 }
 
 function escapeHtml(value) {
@@ -365,6 +392,7 @@ function showToast(message) {
 function switchView(view) {
   const labels = { teacher: '평가 관리', students: '학생 관리', reviews: '피드백 검토', student: '학생 결과 보기' };
   document.querySelectorAll('.view').forEach((section) => section.classList.toggle('hidden', section.id !== `${view}-view`));
+  document.querySelector('#class-settings').classList.toggle('hidden', view === 'student');
   document.querySelector('#breadcrumb-current').textContent = view === 'teacher' && activeSubject ? `${activeSubject} 평가` : labels[view];
   if (view === 'reviews') renderReviews();
   document.querySelectorAll('.nav-item').forEach((button) => {
@@ -376,6 +404,26 @@ function switchView(view) {
 }
 
 document.querySelectorAll('.nav-item').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.view)));
+document.querySelector('#class-settings').addEventListener('click', () => {
+  document.querySelector('#school-name-input').value = classSettings.schoolName;
+  document.querySelector('#grade-input').value = classSettings.grade;
+  document.querySelector('#class-number-input').value = classSettings.classNumber;
+  document.querySelector('#class-settings-dialog').showModal();
+});
+document.querySelector('.settings-close').addEventListener('click', () => document.querySelector('#class-settings-dialog').close());
+document.querySelector('.settings-cancel').addEventListener('click', () => document.querySelector('#class-settings-dialog').close());
+document.querySelector('#class-settings-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  classSettings = {
+    schoolName: document.querySelector('#school-name-input').value.trim(),
+    grade: document.querySelector('#grade-input').value,
+    classNumber: document.querySelector('#class-number-input').value
+  };
+  renderClassInfo();
+  const persisted = saveClassSettings();
+  document.querySelector('#class-settings-dialog').close();
+  showToast(persisted ? '학교와 학급 정보를 저장했어요.' : '브라우저 저장소를 사용할 수 없어 새로고침하면 설정이 초기화될 수 있어요.');
+});
 document.querySelector('#assessment-search').addEventListener('input', (event) => renderAssessments(event.target.value));
 document.querySelector('#subject-grid').addEventListener('click', (event) => {
   const button = event.target.closest('[data-subject]');
@@ -746,6 +794,7 @@ document.querySelector('#logout-student').addEventListener('click', () => {
   document.querySelector('#student-login-card').classList.remove('hidden');
 });
 
+renderClassInfo();
 updateUnitOptions(document.querySelector('#assessment-subject').value);
 renderSubjectCards();
 renderStudents();
