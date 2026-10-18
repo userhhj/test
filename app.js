@@ -87,7 +87,7 @@ function saveData() {
 }
 
 function loadClassSettings() {
-  const defaults = { schoolName: '햇살초등학교', grade: '6', classNumber: '6' };
+  const defaults = { schoolName: '햇살초등학교', grade: '6', classNumber: '6', teacherName: '김선생님', teacherInfo: '6학년 담임' };
   try {
     return { ...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') };
   } catch {
@@ -109,6 +109,18 @@ function renderClassInfo() {
   document.querySelector('#school-display').textContent = classSettings.schoolName;
   document.querySelector('#class-display').textContent = classLabel;
   document.querySelector('#class-stat-label').textContent = classLabel;
+  document.querySelector('#teacher-display-name').textContent = classSettings.teacherName;
+  document.querySelector('#teacher-display-info').textContent = classSettings.teacherInfo || '담당 정보 미입력';
+  document.querySelector('#teacher-avatar').textContent = classSettings.teacherName.trim().slice(0, 1) || '교';
+}
+
+function openClassSettings() {
+  document.querySelector('#school-name-input').value = classSettings.schoolName;
+  document.querySelector('#grade-input').value = classSettings.grade;
+  document.querySelector('#class-number-input').value = classSettings.classNumber;
+  document.querySelector('#teacher-name-input').value = classSettings.teacherName;
+  document.querySelector('#teacher-info-input').value = classSettings.teacherInfo;
+  document.querySelector('#class-settings-dialog').showModal();
 }
 
 function escapeHtml(value) {
@@ -404,12 +416,8 @@ function switchView(view) {
 }
 
 document.querySelectorAll('.nav-item').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.view)));
-document.querySelector('#class-settings').addEventListener('click', () => {
-  document.querySelector('#school-name-input').value = classSettings.schoolName;
-  document.querySelector('#grade-input').value = classSettings.grade;
-  document.querySelector('#class-number-input').value = classSettings.classNumber;
-  document.querySelector('#class-settings-dialog').showModal();
-});
+document.querySelector('#class-settings').addEventListener('click', openClassSettings);
+document.querySelector('#teacher-settings').addEventListener('click', openClassSettings);
 document.querySelector('.settings-close').addEventListener('click', () => document.querySelector('#class-settings-dialog').close());
 document.querySelector('.settings-cancel').addEventListener('click', () => document.querySelector('#class-settings-dialog').close());
 document.querySelector('#class-settings-form').addEventListener('submit', (event) => {
@@ -417,7 +425,9 @@ document.querySelector('#class-settings-form').addEventListener('submit', (event
   classSettings = {
     schoolName: document.querySelector('#school-name-input').value.trim(),
     grade: document.querySelector('#grade-input').value,
-    classNumber: document.querySelector('#class-number-input').value
+    classNumber: document.querySelector('#class-number-input').value,
+    teacherName: document.querySelector('#teacher-name-input').value.trim(),
+    teacherInfo: document.querySelector('#teacher-info-input').value.trim()
   };
   renderClassInfo();
   const persisted = saveClassSettings();

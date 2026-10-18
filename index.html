@@ -47,9 +47,9 @@
 
         <div class="sidebar-bottom">
           <div class="teacher-profile">
-            <div class="profile-avatar">김</div>
-            <span><strong>김선생님</strong><small>교사 데모 화면</small></span>
-            <button class="icon-button" type="button" aria-label="계정 메뉴">
+            <div class="profile-avatar" id="teacher-avatar">김</div>
+            <span><strong id="teacher-display-name">김선생님</strong><small id="teacher-display-info">6학년 담임</small></span>
+            <button class="icon-button" id="teacher-settings" type="button" aria-label="교사 정보 수정">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
             </button>
           </div>
@@ -62,7 +62,7 @@
           <div class="breadcrumbs"><span>우리 반</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">평가 관리</strong></div>
           <div class="topbar-right">
             <span class="demo-badge"><span></span> 시연용 데이터</span>
-            <button class="help-button" id="class-settings" type="button" aria-label="학교와 학급 정보 수정" title="학교와 학급 정보 수정">
+            <button class="help-button" id="class-settings" type="button" aria-label="학교·학급·교사 정보 수정" title="학교·학급·교사 정보 수정">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1A1.7 1.7 0 0 0 4.2 12H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
             </button>
           </div>
@@ -201,6 +201,8 @@
         <div class="dialog-heading"><div><p class="eyebrow">CLASS SETTINGS</p><h2 id="class-settings-title">학교·학급 정보 수정</h2></div><button class="icon-button settings-close" type="button" aria-label="닫기">×</button></div>
         <label class="field-label" for="school-name-input">학교 이름</label><input class="plain-input" id="school-name-input" required />
         <div class="two-fields"><div><label class="field-label" for="grade-input">학년</label><input class="plain-input" id="grade-input" type="number" min="1" max="6" required /></div><div><label class="field-label" for="class-number-input">반</label><input class="plain-input" id="class-number-input" type="number" min="1" required /></div></div>
+        <label class="field-label" for="teacher-name-input">선생님 이름</label><input class="plain-input" id="teacher-name-input" required />
+        <label class="field-label" for="teacher-info-input">담당 정보</label><input class="plain-input" id="teacher-info-input" placeholder="예: 6학년 담임" />
         <p class="dialog-hint">설정은 현재 브라우저에만 저장됩니다. 다른 기기와 공유되지는 않습니다.</p>
         <div class="dialog-actions"><button class="button button-quiet settings-cancel" type="button">취소</button><button class="button button-primary" type="submit">저장</button></div>
       </form>
