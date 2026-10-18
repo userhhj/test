@@ -52,6 +52,7 @@ let editingStudentNumber = null;
 let feedbackTarget = null;
 let expandedReviewId = null;
 let toastTimer;
+let storageWarningShown = false;
 
 function loadData() {
   try {
@@ -73,7 +74,14 @@ function loadData() {
 }
 
 function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    if (!storageWarningShown) {
+      storageWarningShown = true;
+      showToast('브라우저 저장소를 사용할 수 없어 새로고침하면 변경 내용이 사라질 수 있어요.');
+    }
+  }
 }
 
 function escapeHtml(value) {
