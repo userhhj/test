@@ -791,11 +791,6 @@ document.querySelector('#student-assessment-list').addEventListener('click', (ev
   renderStudentResults(activeStudent, activeStudentSubject);
   showToast('재시험 의사를 저장했어요.');
 });
-document.querySelector('#fill-demo').addEventListener('click', () => {
-  document.querySelector('#student-number').value = '12';
-  document.querySelector('#student-pin').value = '1234';
-  document.querySelector('#login-error').classList.add('hidden');
-});
 document.querySelector('#logout-student').addEventListener('click', () => {
   activeStudent = null;
   activeStudentSubject = null;
